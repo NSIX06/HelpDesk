@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "PowerShell(cd \"C:\\\\Users\\\\otacilio.neto\\\\Desktop\\\\Douglas\\\\glpi\"; $env:DATABASE_URL=\"postgresql://neondb_owner:npg_OmZHus4p7DPo@ep-small-smoke-ac13fnf6-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require\"; node -e \"const {neon} = require\\('@neondatabase/serverless'\\); const s = neon\\(process.env.DATABASE_URL\\); console.log\\('unsafe:', typeof s.unsafe\\); console.log\\('transaction:', typeof s.transaction\\)\")",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:3000\" -Method GET -UseBasicParsing 2>&1)"
+    ]
+  }
+}
