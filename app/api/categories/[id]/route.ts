@@ -15,14 +15,17 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await req.json()
-    const { name, description, parent_id, active } = body
+    const { name, description, parent_id, department_id, active } = body
 
     if (!name) return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 })
 
     const result = await sql`
       UPDATE ticket_categories
-      SET name = ${name}, description = ${description || null},
-          parent_id = ${parent_id || null}, active = ${active ?? true},
+      SET name = ${name},
+          description = ${description || null},
+          parent_id = ${parent_id || null},
+          department_id = ${department_id || null},
+          active = ${active ?? true},
           updated_at = NOW()
       WHERE id = ${parseInt(id)}
       RETURNING *

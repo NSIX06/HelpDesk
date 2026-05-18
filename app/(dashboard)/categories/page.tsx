@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Plus, Edit2, ChevronRight, Tag, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react'
+import { Plus, Edit2, ChevronRight, Tag, ToggleLeft, ToggleRight, AlertCircle, Building2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { Badge } from '@/components/Badge'
 import { Modal } from '@/components/Modal'
@@ -19,22 +19,25 @@ export default function CategoriesPage() {
 
   const [categories, setCategories] = useState<any[]>([])
   const [flatCategories, setFlatCategories] = useState<any[]>([])
+  const [departments, setDepartments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editCat, setEditCat] = useState<any>(null)
-  const [form, setForm] = useState({ name: '', description: '', parent_id: '', active: true })
+  const [form, setForm] = useState({ name: '', description: '', parent_id: '', department_id: '', active: true })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [expandedRoots, setExpandedRoots] = useState<Set<number>>(new Set())
 
   const load = useCallback(async () => {
     setLoading(true)
-    const [tree, flat] = await Promise.all([
+    const [tree, flat, depts] = await Promise.all([
       fetch('/api/categories?active=false').then(r => r.json()),
       fetch('/api/categories?flat=true&active=false').then(r => r.json()),
+      fetch('/api/departments').then(r => r.json()),
     ])
     setCategories(Array.isArray(tree) ? tree : [])
     setFlatCategories(Array.isArray(flat) ? flat : [])
+    setDepartments(Array.isArray(depts) ? depts : [])
     setExpandedRoots(new Set((Array.isArray(tree) ? tree : []).map((c: any) => c.id)))
     setLoading(false)
   }, [])
@@ -43,7 +46,7 @@ export default function CategoriesPage() {
 
   function openCreate(parentId?: number) {
     setEditCat(null)
-    setForm({ name: '', description: '', parent_id: parentId ? String(parentId) : '', active: true })
+    setForm({ name: '', description: '', parent_id: parentId ? String(parentId) : '', department_id: '', active: true })
     setError('')
     setModalOpen(true)
   }
@@ -54,6 +57,7 @@ export default function CategoriesPage() {
       name: c.name,
       description: c.description || '',
       parent_id: c.parent_id ? String(c.parent_id) : '',
+      department_id: c.department_id ? String(c.department_id) : '',
       active: c.active,
     })
     setError('')
@@ -68,6 +72,7 @@ export default function CategoriesPage() {
     const body = {
       ...form,
       parent_id: form.parent_id ? parseInt(form.parent_id) : null,
+      department_id: form.department_id ? parseInt(form.department_id) : null,
     }
 
     const res = editCat
@@ -102,7 +107,7 @@ export default function CategoriesPage() {
     <div className="p-6 max-w-5xl mx-auto">
       <PageHeader
         title="Categorias de Chamados"
-        subtitle="Gerencie tipos e subtipos de chamados"
+        subtitle="Gerencie tipos e subtipos de chamados por departamento"
         action={
           <button
             onClick={() => openCreate()}
@@ -126,35 +131,44 @@ export default function CategoriesPage() {
             <div key={cat.id}>
               {/* Parent category */}
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition group">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <button
                     onClick={() => setExpandedRoots(prev => {
                       const n = new Set(prev)
                       if (n.has(cat.id)) n.delete(cat.id); else n.add(cat.id)
                       return n
                     })}
-                    className="p-0.5"
+                    className="p-0.5 shrink-0"
                   >
                     <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${expandedRoots.has(cat.id) ? 'rotate-90' : ''}`} />
                   </button>
-                  <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg">
+                  <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg shrink-0">
                     <Tag className="w-4 h-4 text-blue-600" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="font-semibold text-gray-900">{cat.name}</span>
                     {cat.description && (
-                      <p className="text-xs text-gray-400">{cat.description}</p>
+                      <p className="text-xs text-gray-400 truncate">{cat.description}</p>
                     )}
                   </div>
                   <Badge
                     label={cat.active ? 'Ativo' : 'Inativo'}
                     className={cat.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'}
                   />
+                  {/* Department badge */}
+                  {cat.department_name ? (
+                    <span className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full shrink-0">
+                      <Building2 className="w-3 h-3" />
+                      {cat.department_name}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-300 shrink-0">global</span>
+                  )}
                   {cat.children?.length > 0 && (
-                    <span className="text-xs text-gray-400">{cat.children.length} subtipo(s)</span>
+                    <span className="text-xs text-gray-400 shrink-0">{cat.children.length} subtipo(s)</span>
                   )}
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition shrink-0">
                   <button
                     onClick={() => openCreate(cat.id)}
                     className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
@@ -176,22 +190,28 @@ export default function CategoriesPage() {
                   key={child.id}
                   className="flex items-center justify-between px-5 py-3 border-b border-gray-50 bg-gray-50/50 hover:bg-gray-50 transition group"
                 >
-                  <div className="flex items-center gap-3 pl-9">
-                    <div className="flex items-center justify-center w-6 h-6 bg-gray-200 rounded-md">
+                  <div className="flex items-center gap-3 pl-9 min-w-0">
+                    <div className="flex items-center justify-center w-6 h-6 bg-gray-200 rounded-md shrink-0">
                       <Tag className="w-3 h-3 text-gray-500" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <span className="text-sm font-medium text-gray-700">{child.name}</span>
                       {child.description && (
-                        <p className="text-xs text-gray-400">{child.description}</p>
+                        <p className="text-xs text-gray-400 truncate">{child.description}</p>
                       )}
                     </div>
                     <Badge
                       label={child.active ? 'Ativo' : 'Inativo'}
                       className={child.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'}
                     />
+                    {child.department_name && (
+                      <span className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full shrink-0">
+                        <Building2 className="w-3 h-3" />
+                        {child.department_name}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition shrink-0">
                     <button onClick={() => openEdit(child)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
@@ -217,6 +237,8 @@ export default function CategoriesPage() {
               <AlertCircle className="w-4 h-4" /> {error}
             </div>
           )}
+
+          {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Nome <span className="text-red-500">*</span>
@@ -224,21 +246,57 @@ export default function CategoriesPage() {
             <input
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              placeholder="Ex: Suporte de Rede"
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Descrição</label>
             <textarea
               value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               rows={2}
+              placeholder="Descrição opcional..."
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
+
+          {/* Department */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Categoria pai (para subtipos)
+              <Building2 className="w-3.5 h-3.5 inline mr-1 text-gray-400" />
+              Departamento
+              <span className="ml-2 text-xs text-gray-400 font-normal">deixe vazio para tornar global</span>
+            </label>
+            <select
+              value={form.department_id}
+              onChange={e => setForm(f => ({ ...f, department_id: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Global (todos os departamentos)</option>
+              {departments.map((d: any) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+            {!form.department_id && (
+              <p className="text-xs text-gray-400 mt-1">
+                Categorias globais aparecem em chamados de qualquer departamento.
+              </p>
+            )}
+            {form.department_id && (
+              <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                <Building2 className="w-3 h-3" />
+                Aparece apenas em chamados do departamento selecionado.
+              </p>
+            )}
+          </div>
+
+          {/* Parent category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Categoria pai <span className="text-xs text-gray-400 font-normal">(para subtipos)</span>
             </label>
             <select
               value={form.parent_id}
@@ -249,10 +307,14 @@ export default function CategoriesPage() {
               {parentOnlyCategories
                 .filter((c: any) => c.id !== editCat?.id)
                 .map((c: any) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id}>
+                    {c.name}{c.department_name ? ` (${c.department_name})` : ' (global)'}
+                  </option>
                 ))}
             </select>
           </div>
+
+          {/* Active toggle (edit only) */}
           {editCat && (
             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
               <input
@@ -264,6 +326,7 @@ export default function CategoriesPage() {
               Categoria ativa
             </label>
           )}
+
           <div className="flex justify-end gap-3 pt-2">
             <button
               onClick={() => setModalOpen(false)}

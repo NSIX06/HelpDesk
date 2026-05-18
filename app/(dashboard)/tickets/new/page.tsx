@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { ArrowLeft, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { DeptCategoryPicker } from '@/components/DeptCategoryPicker'
 
 export default function NewTicketPage() {
   const router = useRouter()
@@ -22,17 +23,15 @@ export default function NewTicketPage() {
     assignee_id: '',
     due_date: '',
   })
-  const [categories, setCategories] = useState<any[]>([])
-  const [departments, setDepartments] = useState<any[]>([])
-  const [users, setUsers] = useState<any[]>([])
+  const [technicians, setTechnicians] = useState<any[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/api/categories?flat=true').then(r => r.json()).then(setCategories)
-    fetch('/api/departments').then(r => r.json()).then(setDepartments)
     if (isAdminOrTech) {
-      fetch('/api/users?role=technician&active=true').then(r => r.json()).then(setUsers)
+      fetch('/api/users?active=true').then(r => r.json()).then(u =>
+        setTechnicians(u.filter((x: any) => x.role !== 'user'))
+      )
     }
   }, [isAdminOrTech])
 
@@ -54,7 +53,6 @@ export default function NewTicketPage() {
     })
 
     setSubmitting(false)
-
     if (res.ok) {
       const data = await res.json()
       router.push(`/tickets/${data.id}`)
@@ -63,11 +61,6 @@ export default function NewTicketPage() {
       setError(data.error || 'Erro ao criar chamado')
     }
   }
-
-  const parentCategories = categories.filter((c: any) => !c.parent_id)
-  const selectedParent = form.category_id
-    ? categories.find((c: any) => c.id === parseInt(form.category_id) && !c.parent_id)
-    : null
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -90,6 +83,7 @@ export default function NewTicketPage() {
           </div>
         )}
 
+        {/* Título */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Título <span className="text-red-500">*</span>
@@ -104,10 +98,9 @@ export default function NewTicketPage() {
           />
         </div>
 
+        {/* Descrição */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Descrição
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Descrição</label>
           <textarea
             value={form.description}
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
@@ -117,6 +110,7 @@ export default function NewTicketPage() {
           />
         </div>
 
+        {/* Tipo + Prioridade */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo</label>
@@ -131,7 +125,6 @@ export default function NewTicketPage() {
               <option value="change">Mudança</option>
             </select>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Prioridade</label>
             <select
@@ -147,45 +140,22 @@ export default function NewTicketPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Categoria</label>
-            <select
-              value={form.category_id}
-              onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Selecionar categoria</option>
-              {parentCategories.map((c: any) => (
-                <optgroup key={c.id} label={c.name}>
-                  <option value={c.id}>{c.name}</option>
-                  {categories
-                    .filter((sub: any) => sub.parent_id === c.id)
-                    .map((sub: any) => (
-                      <option key={sub.id} value={sub.id}>
-                        &nbsp;&nbsp;{sub.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Departamento</label>
-            <select
-              value={form.department_id}
-              onChange={e => setForm(f => ({ ...f, department_id: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Selecionar departamento</option>
-              {departments.map((d: any) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
-          </div>
+        {/* Departamento + Categoria (bidirecional) */}
+        <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/50">
+          <p className="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wide">
+            Classificação
+          </p>
+          <DeptCategoryPicker
+            departmentId={form.department_id}
+            categoryId={form.category_id}
+            onDepartmentChange={v => setForm(f => ({ ...f, department_id: v }))}
+            onCategoryChange={v => {
+              setForm(f => ({ ...f, category_id: v }))
+            }}
+          />
         </div>
 
+        {/* Atribuição e Prazo (somente admin/técnico) */}
         {isAdminOrTech && (
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -196,12 +166,11 @@ export default function NewTicketPage() {
                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Não atribuído</option>
-                {users.map((u: any) => (
+                {technicians.map((u: any) => (
                   <option key={u.id} value={u.id}>{u.name}</option>
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Prazo</label>
               <input

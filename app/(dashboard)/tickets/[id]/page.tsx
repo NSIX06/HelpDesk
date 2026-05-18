@@ -14,6 +14,7 @@ import {
 } from '@/lib/utils'
 import { Badge } from '@/components/Badge'
 import { Modal } from '@/components/Modal'
+import { DeptCategoryPicker } from '@/components/DeptCategoryPicker'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
@@ -63,8 +64,6 @@ export default function TicketDetailPage() {
   const [pendingFiles, setPendingFiles] = useState<any[]>([])
   const [editOpen, setEditOpen] = useState(false)
   const [editForm, setEditForm] = useState<any>({})
-  const [categories, setCategories] = useState<any[]>([])
-  const [departments, setDepartments] = useState<any[]>([])
   const [technicians, setTechnicians] = useState<any[]>([])
   const [saving, setSaving] = useState(false)
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>('default')
@@ -191,8 +190,6 @@ export default function TicketDetailPage() {
   // Reload edit modal data
   useEffect(() => {
     if (editOpen) {
-      fetch('/api/categories?flat=true').then(r => r.json()).then(setCategories)
-      fetch('/api/departments').then(r => r.json()).then(setDepartments)
       fetch('/api/users?active=true').then(r => r.json()).then(u =>
         setTechnicians(u.filter((x: any) => x.role !== 'user'))
       )
@@ -276,7 +273,6 @@ export default function TicketDetailPage() {
   if (!ticket) return null
 
   const isClosed = ticket.status === 'closed'
-  const parentCats = categories.filter((c: any) => !c.parent_id)
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -618,38 +614,14 @@ export default function TicketDetailPage() {
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Categoria</label>
-                  <select
-                    value={editForm.category_id || ''}
-                    onChange={e => setEditForm((f: any) => ({ ...f, category_id: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Sem categoria</option>
-                    {parentCats.map((c: any) => (
-                      <optgroup key={c.id} label={c.name}>
-                        <option value={c.id}>{c.name}</option>
-                        {categories.filter((s: any) => s.parent_id === c.id).map((s: any) => (
-                          <option key={s.id} value={s.id}>&nbsp;&nbsp;{s.name}</option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Departamento</label>
-                  <select
-                    value={editForm.department_id || ''}
-                    onChange={e => setEditForm((f: any) => ({ ...f, department_id: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Sem departamento</option>
-                    {departments.map((d: any) => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
-                    ))}
-                  </select>
-                </div>
+              <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/50">
+                <p className="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wide">Classificação</p>
+                <DeptCategoryPicker
+                  departmentId={editForm.department_id || ''}
+                  categoryId={editForm.category_id || ''}
+                  onDepartmentChange={v => setEditForm((f: any) => ({ ...f, department_id: v }))}
+                  onCategoryChange={v => setEditForm((f: any) => ({ ...f, category_id: v }))}
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

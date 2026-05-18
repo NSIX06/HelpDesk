@@ -11,29 +11,50 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const activeOnly = searchParams.get('active') !== 'false'
     const flat = searchParams.get('flat') === 'true'
+    const departmentId = searchParams.get('department_id') || ''
+    const search = searchParams.get('search') || ''
 
-    let categories
+    // Build conditions
+    const conditions: string[] = []
+    const params: any[] = []
+
     if (activeOnly) {
-      categories = await sql`
-        SELECT c.id, c.name, c.description, c.parent_id, c.active, c.created_at,
-               p.name as parent_name
-        FROM ticket_categories c
-        LEFT JOIN ticket_categories p ON c.parent_id = p.id
-        WHERE c.active = true
-        ORDER BY COALESCE(c.parent_id, c.id), c.parent_id NULLS FIRST, c.name ASC
-      `
-    } else {
-      categories = await sql`
-        SELECT c.id, c.name, c.description, c.parent_id, c.active, c.created_at,
-               p.name as parent_name
-        FROM ticket_categories c
-        LEFT JOIN ticket_categories p ON c.parent_id = p.id
-        ORDER BY COALESCE(c.parent_id, c.id), c.parent_id NULLS FIRST, c.name ASC
-      `
+      conditions.push('c.active = true')
     }
+
+    // Filter by department:
+    // - categories that belong to that department
+    // - OR categories with no department (global/universal)
+    if (departmentId) {
+      params.push(parseInt(departmentId))
+      conditions.push(`(c.department_id = $${params.length} OR c.department_id IS NULL)`)
+    }
+
+    if (search) {
+      params.push('%' + search + '%')
+      conditions.push(`c.name ILIKE $${params.length}`)
+    }
+
+    const WHERE = conditions.length ? 'WHERE ' + conditions.join(' AND ') : ''
+
+    const query = `
+      SELECT
+        c.id, c.name, c.description, c.parent_id, c.active,
+        c.department_id, c.created_at,
+        p.name as parent_name,
+        d.name as department_name
+      FROM ticket_categories c
+      LEFT JOIN ticket_categories p ON c.parent_id = p.id
+      LEFT JOIN departments d ON c.department_id = d.id
+      ${WHERE}
+      ORDER BY COALESCE(c.parent_id, c.id), c.parent_id NULLS FIRST, c.name ASC
+    `
+
+    const categories = await sql(query, params)
 
     if (flat) return NextResponse.json(categories)
 
+    // Build tree (only root + their children)
     const roots = (categories as any[]).filter(c => !c.parent_id)
     const tree = roots.map(root => ({
       ...root,
@@ -55,13 +76,13 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { name, description, parent_id } = body
+    const { name, description, parent_id, department_id } = body
 
     if (!name) return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 })
 
     const result = await sql`
-      INSERT INTO ticket_categories (name, description, parent_id)
-      VALUES (${name}, ${description || null}, ${parent_id || null})
+      INSERT INTO ticket_categories (name, description, parent_id, department_id)
+      VALUES (${name}, ${description || null}, ${parent_id || null}, ${department_id || null})
       RETURNING *
     `
 
