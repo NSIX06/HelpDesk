@@ -275,7 +275,7 @@ export default function TicketDetailPage() {
   const isClosed = ticket.status === 'closed'
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <Link href="/tickets" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition">
           <ArrowLeft className="w-4 h-4" /> Voltar para chamados
@@ -318,9 +318,9 @@ export default function TicketDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Main — Chat */}
-        <div className="xl:col-span-2 flex flex-col gap-4">
+        <div className="lg:col-span-2 flex flex-col gap-4">
           {/* Ticket header */}
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-start justify-between gap-4">
@@ -580,7 +580,7 @@ export default function TicketDetailPage() {
           </div>
           {isAdminOrTech && (
             <>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {(['status', 'priority', 'type'] as const).map(field => (
                   <div key={field}>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5 capitalize">{

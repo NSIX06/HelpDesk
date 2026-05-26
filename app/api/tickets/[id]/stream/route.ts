@@ -50,31 +50,28 @@ export async function GET(
 
       const pollInterval = setInterval(async () => {
         try {
-          // Fetch new comments since last check
-          let newComments: any[]
-          if (isAdminOrTech) {
-            newComments = await sql`
-              SELECT
-                tc.id, tc.ticket_id, tc.user_id, tc.content, tc.is_internal, tc.created_at,
-                u.name as user_name, u.role as user_role,
-                '[]'::json as attachments
-              FROM ticket_comments tc
-              JOIN users u ON tc.user_id = u.id
-              WHERE tc.ticket_id = ${ticketId} AND tc.id > ${lastCommentId}
-              ORDER BY tc.created_at ASC
-            `
-          } else {
-            newComments = await sql`
-              SELECT
-                tc.id, tc.ticket_id, tc.user_id, tc.content, tc.is_internal, tc.created_at,
-                u.name as user_name, u.role as user_role,
-                '[]'::json as attachments
-              FROM ticket_comments tc
-              JOIN users u ON tc.user_id = u.id
-              WHERE tc.ticket_id = ${ticketId} AND tc.id > ${lastCommentId} AND tc.is_internal = false
-              ORDER BY tc.created_at ASC
-            `
-          }
+          // Fetch new comments since last check (with real attachments)
+          const internalFilter = isAdminOrTech ? '' : 'AND tc.is_internal = false'
+          const query = `
+            SELECT
+              tc.id, tc.ticket_id, tc.user_id, tc.content, tc.is_internal, tc.created_at,
+              u.name as user_name, u.role as user_role,
+              COALESCE((
+                SELECT json_agg(json_build_object(
+                  'id', ta.id,
+                  'original_name', ta.original_name,
+                  'file_size', ta.file_size,
+                  'mime_type', ta.mime_type
+                ) ORDER BY ta.id)
+                FROM ticket_attachments ta
+                WHERE ta.comment_id = tc.id
+              ), '[]'::json) as attachments
+            FROM ticket_comments tc
+            JOIN users u ON tc.user_id = u.id
+            WHERE tc.ticket_id = $1 AND tc.id > $2 ${internalFilter}
+            ORDER BY tc.created_at ASC
+          `
+          const newComments: any[] = await sql(query, [ticketId, lastCommentId])
 
           if (newComments.length > 0) {
             lastCommentId = newComments[newComments.length - 1].id

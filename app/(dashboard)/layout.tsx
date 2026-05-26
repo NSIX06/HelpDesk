@@ -10,7 +10,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="flex-1 ml-64">
+      {/* pt-14 on mobile = space for fixed top bar; lg:pt-0 = desktop has no top bar */}
+      <main className="flex-1 pt-14 lg:pt-0 lg:ml-64 min-w-0">
         {children}
       </main>
     </div>

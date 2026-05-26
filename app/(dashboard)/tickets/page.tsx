@@ -58,7 +58,7 @@ export default function TicketsPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <PageHeader
         title="Chamados"
         subtitle={`${total} chamado(s) encontrado(s)`}
@@ -75,8 +75,8 @@ export default function TicketsPage() {
 
       {/* Filters */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5">
-        <form onSubmit={handleSearch} className="flex flex-wrap gap-3">
-          <div className="flex-1 min-w-48 relative">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row flex-wrap gap-3">
+          <div className="flex-1 min-w-0 sm:min-w-48 relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               value={search}
@@ -129,7 +129,7 @@ export default function TicketsPage() {
         </form>
       </div>
 
-      {/* Table */}
+      {/* Tickets list */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
@@ -144,58 +144,80 @@ export default function TicketsPage() {
             </Link>
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-4 py-3 text-gray-500 font-medium w-16">#</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Título</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Tipo</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Prioridade</th>
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Status</th>
-                {isAdminOrTech && (
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">Solicitante</th>
-                )}
-                <th className="text-left px-4 py-3 text-gray-500 font-medium">Criado em</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {tickets.map(ticket => (
-                <tr key={ticket.id} className="hover:bg-gray-50 transition group">
-                  <td className="px-4 py-3 text-gray-400 font-mono">#{ticket.id}</td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/tickets/${ticket.id}`}
-                      className="font-medium text-gray-900 group-hover:text-blue-600 transition line-clamp-1"
-                    >
-                      {ticket.title}
-                    </Link>
-                    {ticket.category_name && (
-                      <p className="text-xs text-gray-400 mt-0.5">{ticket.category_name}</p>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">{typeLabels[ticket.type] || ticket.type}</td>
-                  <td className="px-4 py-3">
-                    <Badge
-                      label={priorityLabels[ticket.priority] || ticket.priority}
-                      className={priorityColors[ticket.priority]}
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge
-                      label={statusLabels[ticket.status] || ticket.status}
-                      className={statusColors[ticket.status]}
-                    />
-                  </td>
+          <>
+            {/* Desktop table */}
+            <table className="hidden sm:table w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium w-16">#</th>
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium">Título</th>
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium hidden md:table-cell">Tipo</th>
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium">Prioridade</th>
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium">Status</th>
                   {isAdminOrTech && (
-                    <td className="px-4 py-3 text-gray-600">{ticket.requester_name}</td>
+                    <th className="text-left px-4 py-3 text-gray-500 font-medium hidden lg:table-cell">Solicitante</th>
                   )}
-                  <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
-                    {formatDate(ticket.created_at)}
-                  </td>
+                  <th className="text-left px-4 py-3 text-gray-500 font-medium hidden lg:table-cell">Criado em</th>
                 </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {tickets.map(ticket => (
+                  <tr key={ticket.id} className="hover:bg-gray-50 transition group">
+                    <td className="px-4 py-3 text-gray-400 font-mono">#{ticket.id}</td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/tickets/${ticket.id}`}
+                        className="font-medium text-gray-900 group-hover:text-blue-600 transition line-clamp-1"
+                      >
+                        {ticket.title}
+                      </Link>
+                      {ticket.category_name && (
+                        <p className="text-xs text-gray-400 mt-0.5">{ticket.category_name}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{typeLabels[ticket.type] || ticket.type}</td>
+                    <td className="px-4 py-3">
+                      <Badge label={priorityLabels[ticket.priority] || ticket.priority} className={priorityColors[ticket.priority]} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge label={statusLabels[ticket.status] || ticket.status} className={statusColors[ticket.status]} />
+                    </td>
+                    {isAdminOrTech && (
+                      <td className="px-4 py-3 text-gray-600 hidden lg:table-cell">{ticket.requester_name}</td>
+                    )}
+                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap hidden lg:table-cell">
+                      {formatDate(ticket.created_at)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Mobile cards */}
+            <div className="sm:hidden divide-y divide-gray-50">
+              {tickets.map(ticket => (
+                <Link
+                  key={ticket.id}
+                  href={`/tickets/${ticket.id}`}
+                  className="flex flex-col gap-2 px-4 py-3.5 hover:bg-gray-50 transition"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="font-medium text-gray-900 line-clamp-2 flex-1">{ticket.title}</span>
+                    <span className="text-gray-400 font-mono text-xs shrink-0">#{ticket.id}</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge label={statusLabels[ticket.status] || ticket.status} className={statusColors[ticket.status]} />
+                    <Badge label={priorityLabels[ticket.priority] || ticket.priority} className={priorityColors[ticket.priority]} />
+                    <span className="text-xs text-gray-400">{typeLabels[ticket.type]}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    {isAdminOrTech && <span>{ticket.requester_name}</span>}
+                    <span className="ml-auto">{formatDate(ticket.created_at)}</span>
+                  </div>
+                </Link>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
 
         {/* Pagination */}

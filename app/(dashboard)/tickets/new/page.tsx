@@ -63,7 +63,7 @@ export default function NewTicketPage() {
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-3xl mx-auto">
       <div className="mb-6">
         <Link
           href="/tickets"
@@ -111,7 +111,7 @@ export default function NewTicketPage() {
         </div>
 
         {/* Tipo + Prioridade */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo</label>
             <select
@@ -157,7 +157,7 @@ export default function NewTicketPage() {
 
         {/* Atribuição e Prazo (somente admin/técnico) */}
         {isAdminOrTech && (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Atribuir a</label>
               <select
