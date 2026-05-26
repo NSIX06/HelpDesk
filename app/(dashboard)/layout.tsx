@@ -8,9 +8,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session) redirect('/login')
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#030712]">
       <Sidebar />
-      {/* pt-14 on mobile = space for fixed top bar; lg:pt-0 = desktop has no top bar */}
       <main className="flex-1 pt-14 lg:pt-0 lg:ml-64 min-w-0">
         {children}
       </main>

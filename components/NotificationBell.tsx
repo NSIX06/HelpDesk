@@ -18,9 +18,9 @@ interface Notification {
 }
 
 const typeColors: Record<string, string> = {
-  new_comment: 'bg-blue-500',
-  status_changed: 'bg-green-500',
-  assigned: 'bg-purple-500',
+  new_comment:     'bg-violet-600',
+  status_changed:  'bg-emerald-600',
+  assigned:        'bg-cyan-600',
 }
 
 export function NotificationBell() {
@@ -34,10 +34,7 @@ export function NotificationBell() {
   const loadCount = useCallback(async () => {
     try {
       const res = await fetch('/api/notifications?count=true')
-      if (res.ok) {
-        const data = await res.json()
-        setCount(data.count || 0)
-      }
+      if (res.ok) { const d = await res.json(); setCount(d.count || 0) }
     } catch {}
   }, [])
 
@@ -50,19 +47,15 @@ export function NotificationBell() {
     setLoading(false)
   }, [])
 
-  // Poll for new notifications every 30 seconds
   useEffect(() => {
     loadCount()
     const interval = setInterval(loadCount, 30000)
     return () => clearInterval(interval)
   }, [loadCount])
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -70,9 +63,7 @@ export function NotificationBell() {
 
   async function handleOpen() {
     setOpen(o => !o)
-    if (!open) {
-      await loadNotifications()
-    }
+    if (!open) await loadNotifications()
   }
 
   async function markAllRead() {
@@ -82,7 +73,6 @@ export function NotificationBell() {
   }
 
   async function handleNotificationClick(n: Notification) {
-    // Mark as read
     await fetch('/api/notifications', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -90,67 +80,59 @@ export function NotificationBell() {
     })
     setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x))
     setCount(prev => Math.max(0, prev - (n.read ? 0 : 1)))
-
-    if (n.ticket_id) {
-      setOpen(false)
-      router.push(`/tickets/${n.ticket_id}`)
-    }
+    if (n.ticket_id) { setOpen(false); router.push(`/tickets/${n.ticket_id}`) }
   }
-
-  const unreadNotifications = notifications.filter(n => !n.read)
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={handleOpen}
-        className="relative flex items-center justify-center w-9 h-9 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition"
+        className="relative flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-all duration-200"
         title="Notificações"
       >
-        <Bell className="w-5 h-5" />
+        <Bell className="w-4.5 h-4.5" />
         {count > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full">
+          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-[9px] font-bold rounded-full px-1">
             {count > 9 ? '9+' : count}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute left-full ml-2 top-0 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+        <div className="absolute left-full ml-2 top-0 w-80 bg-slate-900 border border-white/[0.08] rounded-2xl shadow-2xl z-50 overflow-hidden ring-1 ring-violet-500/10">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900 text-sm">
-              Notificações
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.06]">
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-slate-100 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Notificações
+              </h3>
               {count > 0 && (
-                <span className="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold">
+                <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-bold ring-1 ring-violet-500/30">
                   {count}
                 </span>
               )}
-            </h3>
+            </div>
             <div className="flex items-center gap-2">
               {count > 0 && (
-                <button
-                  onClick={markAllRead}
-                  className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                >
-                  <CheckCheck className="w-3.5 h-3.5" />
-                  Marcar tudo
+                <button onClick={markAllRead} className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors">
+                  <CheckCheck className="w-3.5 h-3.5" /> Lidas
                 </button>
               )}
-              <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setOpen(false)} className="text-slate-500 hover:text-slate-300 transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           {/* List */}
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-80 overflow-y-auto scrollbar-thin">
             {loading && (
               <div className="py-8 text-center">
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
               </div>
             )}
             {!loading && notifications.length === 0 && (
-              <div className="py-8 text-center text-gray-400 text-sm">
+              <div className="py-10 text-center text-slate-500 text-sm">
                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
                 Nenhuma notificação
               </div>
@@ -160,28 +142,27 @@ export function NotificationBell() {
                 key={n.id}
                 onClick={() => handleNotificationClick(n)}
                 className={cn(
-                  'w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition border-b border-gray-50',
-                  !n.read && 'bg-blue-50/40'
+                  'w-full flex items-start gap-3 px-4 py-3 text-left transition-colors border-b border-white/[0.04]',
+                  !n.read ? 'bg-violet-500/5 hover:bg-violet-500/10' : 'hover:bg-white/[0.03]'
                 )}
               >
                 <div className={cn(
-                  'flex items-center justify-center w-8 h-8 rounded-full shrink-0 mt-0.5',
-                  typeColors[n.type] || 'bg-gray-400',
-                  'text-white'
+                  'flex items-center justify-center w-8 h-8 rounded-xl shrink-0 mt-0.5 text-white',
+                  typeColors[n.type] || 'bg-slate-700'
                 )}>
                   <Ticket className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={cn('text-sm leading-snug', n.read ? 'text-gray-600' : 'text-gray-900 font-medium')}>
+                  <p className={cn('text-sm leading-snug', n.read ? 'text-slate-400' : 'text-slate-200 font-medium')}>
                     {n.title}
                   </p>
                   {n.message && (
-                    <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
+                    <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
                   )}
-                  <p className="text-xs text-gray-300 mt-1">{formatDate(n.created_at)}</p>
+                  <p className="text-[10px] text-slate-600 mt-1">{formatDate(n.created_at)}</p>
                 </div>
                 {!n.read && (
-                  <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2" />
+                  <div className="w-2 h-2 bg-violet-500 rounded-full shrink-0 mt-2" />
                 )}
               </button>
             ))}

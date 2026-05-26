@@ -266,7 +266,7 @@ export default function TicketDetailPage() {
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-violet-600 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -277,7 +277,7 @@ export default function TicketDetailPage() {
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-4">
-        <Link href="/tickets" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition">
+        <Link href="/tickets" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition">
           <ArrowLeft className="w-4 h-4" /> Voltar para chamados
         </Link>
 
@@ -286,20 +286,20 @@ export default function TicketDetailPage() {
           {'Notification' in window && notifPermission !== 'granted' && notifPermission !== 'denied' && (
             <button
               onClick={handleRequestNotification}
-              className="flex items-center gap-2 text-xs text-gray-500 hover:text-blue-600 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-blue-50 transition"
+              className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-200 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/[0.04] transition-all"
             >
               <Bell className="w-3.5 h-3.5" />
               Ativar notificações do PC
             </button>
           )}
           {notifPermission === 'granted' && (
-            <span className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5">
+            <span className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3 py-1.5">
               <Bell className="w-3.5 h-3.5" />
               Notificações ativas
             </span>
           )}
           {notifPermission === 'denied' && (
-            <span className="flex items-center gap-1.5 text-xs text-gray-400">
+            <span className="text-slate-500 text-xs flex items-center gap-1.5">
               <BellOff className="w-3.5 h-3.5" />
               Notificações bloqueadas
             </span>
@@ -309,10 +309,10 @@ export default function TicketDetailPage() {
           <div className={cn(
             'flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border',
             liveConnected
-              ? 'text-green-600 bg-green-50 border-green-200'
-              : 'text-gray-400 bg-gray-50 border-gray-200'
+              ? 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20'
+              : 'text-slate-500 bg-slate-800 border-slate-700'
           )}>
-            <span className={cn('w-1.5 h-1.5 rounded-full', liveConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400')} />
+            <span className={cn('w-1.5 h-1.5 rounded-full', liveConnected ? 'bg-cyan-400 animate-pulse' : 'bg-slate-600')} />
             {liveConnected ? 'Ao vivo' : 'Reconectando...'}
           </div>
         </div>
@@ -322,24 +322,24 @@ export default function TicketDetailPage() {
         {/* Main — Chat */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           {/* Ticket header */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div className="bg-slate-900 border border-white/[0.06] rounded-2xl p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="text-gray-400 font-mono text-sm">#{ticket.id}</span>
+                  <span className="text-slate-600 font-mono text-sm">#{ticket.id}</span>
                   <Badge label={statusLabels[ticket.status] || ticket.status} className={statusColors[ticket.status]} />
                   <Badge label={priorityLabels[ticket.priority] || ticket.priority} className={priorityColors[ticket.priority]} />
-                  <span className="text-xs text-gray-400">{typeLabels[ticket.type]}</span>
+                  <span className="text-xs text-slate-400">{typeLabels[ticket.type]}</span>
                 </div>
-                <h1 className="text-xl font-bold text-gray-900">{ticket.title}</h1>
+                <h1 className="text-xl font-bold text-slate-100" style={{ fontFamily: 'Montserrat, sans-serif' }}>{ticket.title}</h1>
                 {ticket.description && (
-                  <p className="mt-2 text-sm text-gray-600 whitespace-pre-wrap">{ticket.description}</p>
+                  <p className="mt-2 text-sm text-slate-400 whitespace-pre-wrap">{ticket.description}</p>
                 )}
               </div>
               {(isAdminOrTech || (!isClosed && ticket.requester_id === parseInt(user?.id))) && (
                 <button
                   onClick={() => setEditOpen(true)}
-                  className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg px-3 py-2 hover:bg-gray-50 transition shrink-0"
+                  className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-200 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/[0.04] transition-all shrink-0"
                 >
                   <Edit2 className="w-4 h-4" />
                   Editar
@@ -349,17 +349,17 @@ export default function TicketDetailPage() {
           </div>
 
           {/* Chat */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col">
-            <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900 text-sm">
+          <div className="bg-slate-900 border border-white/[0.06] rounded-2xl flex flex-col">
+            <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between">
+              <h2 className="font-semibold text-slate-100 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Atualizações ({comments.length})
               </h2>
             </div>
 
             {/* Messages list */}
-            <div className="overflow-y-auto p-5 space-y-4 min-h-64 max-h-[500px] scrollbar-thin">
+            <div className="overflow-y-auto p-5 space-y-4 min-h-64 max-h-[500px] scrollbar-thin divide-white/[0.04]">
               {comments.length === 0 && (
-                <div className="text-center py-8 text-gray-400 text-sm">
+                <div className="text-center py-8 text-slate-500 text-sm">
                   Nenhuma mensagem ainda. Inicie a conversa abaixo.
                 </div>
               )}
@@ -369,25 +369,26 @@ export default function TicketDetailPage() {
                   <div key={c.id} className={cn('flex gap-3', isMe ? 'flex-row-reverse' : 'flex-row')}>
                     <div className={cn(
                       'flex items-center justify-center w-8 h-8 rounded-full text-white text-xs font-semibold shrink-0',
-                      c.user_role === 'admin' ? 'bg-purple-500' :
-                      c.user_role === 'technician' ? 'bg-blue-500' : 'bg-gray-400'
+                      isMe ? 'bg-gradient-to-br from-violet-600 to-purple-700' :
+                      c.user_role === 'admin' ? 'bg-purple-600' :
+                      c.user_role === 'technician' ? 'bg-cyan-600' : 'bg-slate-600'
                     )}>
                       {getInitials(c.user_name || '?')}
                     </div>
                     <div className={cn('max-w-[70%] flex flex-col gap-1', isMe ? 'items-end' : 'items-start')}>
-                      <div className={cn('flex items-center gap-2 text-xs text-gray-400', isMe && 'flex-row-reverse')}>
-                        <span className="font-medium text-gray-600">{c.user_name}</span>
+                      <div className={cn('flex items-center gap-2 text-xs text-slate-600', isMe && 'flex-row-reverse')}>
+                        <span className="font-medium text-slate-300">{c.user_name}</span>
                         <span>{formatDate(c.created_at)}</span>
                         {c.is_internal && (
-                          <span className="flex items-center gap-0.5 text-orange-500">
+                          <span className="flex items-center gap-0.5 text-amber-400">
                             <Lock className="w-3 h-3" /> Interno
                           </span>
                         )}
                       </div>
                       <div className={cn(
                         'rounded-2xl px-4 py-2.5 text-sm',
-                        c.is_internal ? 'bg-orange-50 border border-orange-200 text-orange-900'
-                          : isMe ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                        c.is_internal ? 'bg-amber-500/10 border border-amber-500/20 text-amber-200'
+                          : isMe ? 'bg-gradient-to-br from-violet-600 to-purple-600 text-white' : 'bg-slate-800 text-slate-200'
                       )}>
                         {c.content && <p className="whitespace-pre-wrap">{c.content}</p>}
                         {c.attachments && c.attachments.length > 0 && (
@@ -399,7 +400,7 @@ export default function TicketDetailPage() {
                                 download={a.original_name}
                                 className={cn(
                                   'flex items-center gap-2 rounded-lg px-3 py-2 text-xs hover:opacity-80 transition',
-                                  isMe ? 'bg-blue-500 text-blue-100' : 'bg-white border border-gray-200 text-gray-700'
+                                  isMe ? 'bg-violet-500/40 text-violet-200' : 'bg-slate-700 border border-white/10 text-slate-300'
                                 )}
                               >
                                 <Download className="w-3.5 h-3.5 shrink-0" />
@@ -419,15 +420,15 @@ export default function TicketDetailPage() {
 
             {/* Input */}
             {!isClosed ? (
-              <form onSubmit={handleSend} className="border-t border-gray-100 p-4">
+              <form onSubmit={handleSend} className="border-t border-white/[0.06] p-4">
                 {pendingFiles.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
                     {pendingFiles.map((f, i) => (
-                      <div key={i} className="flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs rounded-lg px-3 py-1.5">
+                      <div key={i} className="flex items-center gap-1.5 bg-violet-500/15 text-violet-300 text-xs rounded-xl px-3 py-1.5 ring-1 ring-violet-500/30">
                         <Paperclip className="w-3 h-3" />
                         <span className="truncate max-w-32">{f.original_name}</span>
                         <button type="button" onClick={() => setPendingFiles(p => p.filter((_, j) => j !== i))}>
-                          <X className="w-3 h-3 hover:text-red-500" />
+                          <X className="w-3 h-3 hover:text-red-400" />
                         </button>
                       </div>
                     ))}
@@ -435,14 +436,14 @@ export default function TicketDetailPage() {
                 )}
 
                 {isAdminOrTech && (
-                  <label className="flex items-center gap-2 text-xs text-gray-500 mb-2 cursor-pointer w-fit select-none">
+                  <label className="flex items-center gap-2 text-xs text-slate-400 mb-2 cursor-pointer w-fit select-none">
                     <input
                       type="checkbox"
                       checked={isInternal}
                       onChange={e => setIsInternal(e.target.checked)}
-                      className="rounded text-orange-500"
+                      className="rounded text-amber-500"
                     />
-                    <Lock className="w-3 h-3 text-orange-400" />
+                    <Lock className="w-3 h-3 text-amber-400" />
                     Nota interna (visível apenas para técnicos)
                   </label>
                 )}
@@ -456,17 +457,17 @@ export default function TicketDetailPage() {
                     }}
                     placeholder="Digite sua mensagem... (Enter envia, Shift+Enter nova linha)"
                     rows={2}
-                    className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="flex-1 bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-3 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all resize-none"
                   />
                   <div className="flex flex-col gap-2">
-                    <label className="flex items-center justify-center w-10 h-10 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition">
-                      <Paperclip className="w-4 h-4 text-gray-500" />
+                    <label className="flex items-center justify-center w-10 h-10 bg-slate-800 border border-white/10 rounded-xl hover:bg-slate-700 cursor-pointer transition-all">
+                      <Paperclip className="w-4 h-4 text-slate-400" />
                       <input type="file" multiple className="hidden" onChange={handleFileInput} />
                     </label>
                     <button
                       type="submit"
                       disabled={sending || (!message.trim() && pendingFiles.length === 0)}
-                      className="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl transition"
+                      className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl transition-all disabled:opacity-40"
                     >
                       <Send className="w-4 h-4" />
                     </button>
@@ -474,7 +475,7 @@ export default function TicketDetailPage() {
                 </div>
               </form>
             ) : (
-              <div className="border-t border-gray-100 p-4 text-center text-sm text-gray-400">
+              <div className="border-t border-white/[0.06] p-4 text-center text-sm text-slate-500">
                 Este chamado está encerrado
               </div>
             )}
@@ -485,8 +486,8 @@ export default function TicketDetailPage() {
         <div className="space-y-4">
           {/* Actions */}
           {(isAdminOrTech || (!isClosed && ticket.requester_id === parseInt(user?.id))) && (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-              <h3 className="font-semibold text-gray-900 text-sm mb-3">Ações</h3>
+            <div className="bg-slate-900 border border-white/[0.06] rounded-2xl p-4">
+              <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Ações</h3>
               <div className="space-y-2">
                 {isAdminOrTech && ticket.status === 'new' && (
                   <ActionBtn onClick={() => handleStatusChange('in_progress')} color="yellow">
@@ -522,8 +523,8 @@ export default function TicketDetailPage() {
           )}
 
           {/* Details */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-            <h3 className="font-semibold text-gray-900 text-sm mb-3">Detalhes</h3>
+          <div className="bg-slate-900 border border-white/[0.06] rounded-2xl p-4">
+            <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Detalhes</h3>
             <dl className="space-y-3 text-sm">
               <DetailRow label="Status">
                 <Badge label={statusLabels[ticket.status]} className={statusColors[ticket.status]} />
@@ -534,20 +535,20 @@ export default function TicketDetailPage() {
               <DetailRow label="Tipo">{typeLabels[ticket.type]}</DetailRow>
               {ticket.category_name && (
                 <DetailRow label="Categoria">
-                  {ticket.parent_category_name && <span className="text-gray-400">{ticket.parent_category_name} / </span>}
+                  {ticket.parent_category_name && <span className="text-slate-500">{ticket.parent_category_name} / </span>}
                   {ticket.category_name}
                 </DetailRow>
               )}
               {ticket.department_name && <DetailRow label="Departamento">{ticket.department_name}</DetailRow>}
               <DetailRow label="Solicitante">
-                <span className="text-blue-600">{ticket.requester_name}</span>
+                <span className="text-violet-400">{ticket.requester_name}</span>
               </DetailRow>
               <DetailRow label="Técnico">
-                {ticket.assignee_name || <span className="text-gray-400">Não atribuído</span>}
+                {ticket.assignee_name || <span className="text-slate-600 italic">Não atribuído</span>}
               </DetailRow>
               {ticket.due_date && (
                 <DetailRow label="Prazo">
-                  <span className={new Date(ticket.due_date) < new Date() && !isClosed ? 'text-red-600 font-medium' : ''}>
+                  <span className={new Date(ticket.due_date) < new Date() && !isClosed ? 'text-red-400 font-medium' : ''}>
                     {formatDate(ticket.due_date)}
                   </span>
                 </DetailRow>
@@ -565,17 +566,17 @@ export default function TicketDetailPage() {
       <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Editar Chamado" size="xl">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Título</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Título</label>
             <input
               value={editForm.title || ''} onChange={e => setEditForm((f: any) => ({ ...f, title: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-3 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Descrição</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Descrição</label>
             <textarea
               value={editForm.description || ''} onChange={e => setEditForm((f: any) => ({ ...f, description: e.target.value }))}
-              rows={3} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              rows={3} className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-3 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all resize-none"
             />
           </div>
           {isAdminOrTech && (
@@ -583,13 +584,13 @@ export default function TicketDetailPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {(['status', 'priority', 'type'] as const).map(field => (
                   <div key={field}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5 capitalize">{
+                    <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">{
                       field === 'status' ? 'Status' : field === 'priority' ? 'Prioridade' : 'Tipo'
                     }</label>
                     <select
                       value={editForm[field] || ''}
                       onChange={e => setEditForm((f: any) => ({ ...f, [field]: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
                     >
                       {field === 'status' && <>
                         <option value="new">Novo</option>
@@ -614,8 +615,8 @@ export default function TicketDetailPage() {
                   </div>
                 ))}
               </div>
-              <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/50">
-                <p className="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wide">Classificação</p>
+              <div className="bg-slate-800/50 border border-white/[0.06] rounded-2xl p-4">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Classificação</p>
                 <DeptCategoryPicker
                   departmentId={editForm.department_id || ''}
                   categoryId={editForm.category_id || ''}
@@ -625,11 +626,11 @@ export default function TicketDetailPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Técnico Responsável</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Técnico Responsável</label>
                   <select
                     value={editForm.assignee_id || ''}
                     onChange={e => setEditForm((f: any) => ({ ...f, assignee_id: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
                   >
                     <option value="">Não atribuído</option>
                     {technicians.map((t: any) => (
@@ -638,23 +639,23 @@ export default function TicketDetailPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Prazo</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">Prazo</label>
                   <input
                     type="datetime-local" value={editForm.due_date || ''}
                     onChange={e => setEditForm((f: any) => ({ ...f, due_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
                   />
                 </div>
               </div>
             </>
           )}
           <div className="flex justify-end gap-3 pt-2">
-            <button onClick={() => setEditOpen(false)} className="px-4 py-2 border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition">
+            <button onClick={() => setEditOpen(false)} className="bg-slate-800 border border-white/10 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded-xl px-4 py-2 text-sm font-medium transition-all">
               Cancelar
             </button>
             <button
               onClick={handleEditSave} disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition"
+              className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all hover:shadow-[0_0_20px_rgba(124,58,237,0.35)] disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {saving ? 'Salvando...' : 'Salvar'}
@@ -669,22 +670,22 @@ export default function TicketDetailPage() {
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-start justify-between gap-2">
-      <dt className="text-gray-500 shrink-0">{label}</dt>
-      <dd className="text-gray-900 text-right">{children}</dd>
+      <dt className="text-xs text-slate-500 uppercase tracking-wide font-semibold shrink-0">{label}</dt>
+      <dd className="text-sm text-slate-300 text-right">{children}</dd>
     </div>
   )
 }
 
 function ActionBtn({ onClick, color, children }: { onClick: any; color: string; children: React.ReactNode }) {
   const colors: Record<string, string> = {
-    yellow: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-800',
-    orange: 'bg-orange-50 hover:bg-orange-100 text-orange-800',
-    green: 'bg-green-50 hover:bg-green-100 text-green-800',
-    gray: 'bg-gray-50 hover:bg-gray-100 text-gray-700',
-    blue: 'bg-blue-50 hover:bg-blue-100 text-blue-800',
+    yellow: 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30',
+    orange: 'bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 border border-orange-500/30',
+    green: 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30',
+    gray: 'bg-slate-700/50 hover:bg-slate-700 text-slate-400 hover:text-slate-300 border border-white/10',
+    blue: 'bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 border border-violet-500/30',
   }
   return (
-    <button onClick={onClick} className={cn('w-full text-sm font-medium px-3 py-2 rounded-lg transition text-left', colors[color] || colors.gray)}>
+    <button onClick={onClick} className={cn('rounded-xl px-3 py-2 text-sm font-medium w-full text-left transition-all', colors[color] || colors.gray)}>
       {children}
     </button>
   )

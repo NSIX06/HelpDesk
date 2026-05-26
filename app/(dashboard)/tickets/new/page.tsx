@@ -67,17 +67,25 @@ export default function NewTicketPage() {
       <div className="mb-6">
         <Link
           href="/tickets"
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition mb-4"
+          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition mb-4"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar para chamados
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Abrir Novo Chamado</h1>
-        <p className="text-gray-500 text-sm mt-1">Preencha as informações do seu chamado</p>
+        <h1
+          className="text-2xl font-bold text-slate-100"
+          style={{ fontFamily: 'Montserrat, sans-serif' }}
+        >
+          Abrir Novo Chamado
+        </h1>
+        <p className="text-slate-500 text-sm mt-1">Preencha as informações do seu chamado</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-slate-900 border border-white/[0.06] rounded-2xl p-6 space-y-5"
+      >
         {error && (
-          <div className="flex items-center gap-2 text-red-600 bg-red-50 rounded-lg px-4 py-3 text-sm">
+          <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm">
             <AlertCircle className="w-4 h-4 shrink-0" />
             {error}
           </div>
@@ -85,8 +93,8 @@ export default function NewTicketPage() {
 
         {/* Título */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Título <span className="text-red-500">*</span>
+          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
+            Título <span className="text-red-400">*</span>
           </label>
           <input
             type="text"
@@ -94,30 +102,34 @@ export default function NewTicketPage() {
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
             required
             placeholder="Descreva brevemente o problema ou solicitação"
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-4 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
           />
         </div>
 
         {/* Descrição */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Descrição</label>
+          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
+            Descrição
+          </label>
           <textarea
             value={form.description}
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
             rows={5}
             placeholder="Descreva com detalhes o problema, quando ocorre, passos para reproduzir..."
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-4 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all resize-none"
           />
         </div>
 
         {/* Tipo + Prioridade */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
+              Tipo
+            </label>
             <select
               value={form.type}
               onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-4 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
             >
               <option value="incident">Incidente</option>
               <option value="request">Requisição</option>
@@ -126,11 +138,13 @@ export default function NewTicketPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Prioridade</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
+              Prioridade
+            </label>
             <select
               value={form.priority}
               onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-4 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
             >
               <option value="low">Baixa</option>
               <option value="medium">Média</option>
@@ -141,8 +155,8 @@ export default function NewTicketPage() {
         </div>
 
         {/* Departamento + Categoria (bidirecional) */}
-        <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/50">
-          <p className="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wide">
+        <div className="bg-slate-800/50 border border-white/[0.06] rounded-2xl p-4">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">
             Classificação
           </p>
           <DeptCategoryPicker
@@ -159,11 +173,13 @@ export default function NewTicketPage() {
         {isAdminOrTech && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Atribuir a</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
+                Atribuir a
+              </label>
               <select
                 value={form.assignee_id}
                 onChange={e => setForm(f => ({ ...f, assignee_id: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-4 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
               >
                 <option value="">Não atribuído</option>
                 {technicians.map((u: any) => (
@@ -172,12 +188,14 @@ export default function NewTicketPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Prazo</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wide">
+                Prazo
+              </label>
               <input
                 type="datetime-local"
                 value={form.due_date}
                 onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-800 border border-white/10 text-slate-200 rounded-xl px-4 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
               />
             </div>
           </div>
@@ -186,14 +204,14 @@ export default function NewTicketPage() {
         <div className="flex justify-end gap-3 pt-2">
           <Link
             href="/tickets"
-            className="px-5 py-2.5 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition"
+            className="bg-slate-800 border border-white/10 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded-xl px-5 py-2.5 text-sm font-medium transition-all"
           >
             Cancelar
           </Link>
           <button
             type="submit"
             disabled={submitting}
-            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition"
+            className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white font-semibold rounded-xl px-5 py-2.5 text-sm transition-all hover:shadow-[0_0_20px_rgba(124,58,237,0.35)] disabled:opacity-50"
           >
             {submitting ? 'Criando...' : 'Criar Chamado'}
           </button>
